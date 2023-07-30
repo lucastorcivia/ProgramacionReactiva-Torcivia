@@ -1,7 +1,44 @@
-<div *ngIf="alumnos$ | async as filteredAlumnos">
-  <ul>
-    <li *ngFor="let alumno of filteredAlumnos">
-      {{ alumno.nombre }} - {{ alumno.edad }}
-    </li>
-  </ul>
-</div>
+<h1>Productos</h1>
+
+<button (click)="onCreate()" mat-flat-button color="primary" type="button">
+  <mat-icon></mat-icon>
+  <mat-icon>add</mat-icon>
+  Crear producto
+</button>
+
+<table mat-table [dataSource]="(data$ | async) || []" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="id">
+    <th mat-header-cell *matHeaderCellDef>ID</th>
+    <td mat-cell *matCellDef="let product"> {{product.id}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Nombre</th>
+    <td mat-cell *matCellDef="let product"> {{product.name}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef>Precio</th>
+    <td mat-cell *matCellDef="let product"> {{product.price | currency }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="stock">
+    <th mat-header-cell *matHeaderCellDef>Stock</th>
+    <td mat-cell *matCellDef="let product"> {{product.stock}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Borrar</th>
+    <td mat-cell *matCellDef="let product">
+      <button (click)="onDelete(product.id)" mat-icon-button color="warn">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+

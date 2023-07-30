@@ -1,17 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import { Alumno } from './alumno.interface';
+import { Component, OnInit } from '@angular/core';
+import { Product } from './productos.interface';
+import { ProductService } from './product.service';
+import { Observable} from 'rxjs';
 
-const ALUMNOS: Alumno[] = [
-  { id: 1, nombre: 'Pedro', edad: 25 },
-  { id: 2, nombre: 'María', edad: 22 },
-  { id: 3, nombre: 'Martin', edad: 26 },
-  { id: 4, nombre: 'Mario', edad: 23 },
-  { id: 5, nombre: 'Julian', edad: 30 },
-  { id: 6, nombre: 'Lucas', edad: 22 },
-  { id: 7, nombre: 'Esteban', edad: 28 },
-];
 
 @Component({
   selector: 'app-root',
@@ -19,37 +10,27 @@ const ALUMNOS: Alumno[] = [
   styleUrls: ['./app.component.css']
 })
 
-export class AppComponent implements OnDestroy {
-  alumnos$: Observable<Alumno[]> | undefined; 
-  private destroy$: Subject<void> = new Subject<void>();
+export class AppComponent implements OnInit {
+  public data$: Observable<Product[]>;
 
-  constructor() {
-    this.loadAlumnos()
-      .then((alumnos) => {
-        this.alumnos$ = this.filterAlumnos(alumnos);
-      })
-      .catch((error) => {
-        console.error('Error al cargar los alumnos:', error);
-      });
+  public displayedColumns = ['id', 'name', 'price', 'stock' ,'actions'];
+
+  constructor(private productService: ProductService) {
+    this.data$ = this.productService.getProducts();
   }
 
-  loadAlumnos(): Promise<Alumno[]> {
-    return Promise.resolve(ALUMNOS);
+
+  ngOnInit(): void {
+    this.productService.loadProducts();
   }
 
-  filterAlumnos(alumnos: Alumno[]): Observable<Alumno[]> {
-    return new Observable<Alumno[]>((observer) => {
-    const filteredAlumnos = alumnos.filter((alumno) => alumno.edad > 24);
-    observer.next(filteredAlumnos);
-    observer.complete();
-    }).pipe(
-        map((alumnos) => alumnos.filter((alumno) => alumno.edad > 24))
-      );
-    }
+  onCreate(): void {
+    this.productService.create();
+  }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  onDelete(id: number): void {
+    this.productService.deleteById(id);
   }
 }
+
 
